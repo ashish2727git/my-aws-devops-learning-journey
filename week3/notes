@@ -1,0 +1,229 @@
+Day 11
+1. Git Basics & Repository Setup
+•	How to initialize (git init) and clone (git clone) repositories.
+•	Understanding local vs. remote and keyed into origin, main/master branches.
+2. Branching Strategy
+•	Creating new branches: git branch <name>, git checkout -b <name>.
+•	Switching and merging: git checkout, git merge.
+•	Best practices: branch-per-task workflow for feature isolation and cleaner CI/CD pipelines.
+3. Stage, Commit & Reset
+•	File lifecycle: untracked → staged (git add) → committed (git commit).
+•	Correcting mistakes:
+o	Unstage with git reset HEAD <file>.
+o	Amend the last commit using git commit --amend.
+4. Viewing Changes & History
+•	Inspect differences: git diff, git diff --staged.
+•	Visualize commit logs:
+css
+CopyEdit
+git log
+git log --oneline --graph --decorate --all
+Useful during interviews to explain branch structure and merges.
+5. Remote Workflows
+•	Connect your repo: git remote add origin <url>.
+•	Synchronizing code:
+o	Push: git push -u origin <branch>.
+o	Pull: git pull (fetch + merge) or git fetch followed by git merge.
+6. Resolving Conflicts
+•	Occurs when merging diverged histories.
+•	Manual resolution in conflicting files → git add → git commit.
+•	Tip: Demonstrate conflict resolution calmly—common in collaborative environments.
+7. Tagging & Rollbacks
+•	Tagging releases: git tag v1.0, push tags via git push origin --tags.
+•	Undo strategies:
+o	Selective undo: git checkout -- <file>.
+o	Local fixes: git reset --soft/<mixed>/<hard> HEAD~1 (use carefully).
+o	Public history: git revert <commit>.
+8. Git Interview Q&A Highlights
+•	Difference: git pull = fetch + merge; git clone includes full history.
+•	Explain various reset modes and when to use them.
+•	How to push tags and strategies for safe rollback in team environments.
+________________________________________
+🎯 Pro Tips for Interviews
+•	Always clarify context before troubleshooting or explaining a command.
+•	Use real-world scenarios: branching strategy, merge conflicts among multiple team members.
+•	Show your ability to fix mistakes gracefully—commit history management is key.
+ 
+Day12
+🚀 Day 12: Deploy & Expose Your First App on AWS (Live Project)
+🎯 Goal
+To deploy a Node.js web application to an AWS EC2 instance and access it via a public IP.
+________________________________________
+🛠️ Step-by-Step Summary
+1. Launch EC2 Instance
+•	Use: Amazon Linux 2 AMI, t2.micro (Free Tier).
+•	Configure Security Group: open ports 22 (SSH) and 80 (HTTP).
+2. SSH Into the Instance
+ssh -i <your-key.pem> ec2-user@<public-ip>
+3. Install Required Software
+sudo yum update -y
+sudo yum install git -y
+curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install -y nodejs
+4. Clone the Project from GitHub
+📦 GitHub Repo Used:
+Kunal Verma.js Demo App
+🔗 https://github.com/verma-kunal/AWS-Session
+git clone https://github.com/verma-kunal/AWS-Session
+cd simple-node-app
+npm install
+5. Run the Application
+node app.js
+•	Or make it run on port 80:
+sudo node app.js
+6. Expose to Public
+•	Ensure port 80 is open in AWS security group.
+•	Visit http://<your-ec2-public-ip> to see the live app.
+________________________________________
+🔄 Optional Enhancements
+•	Add Elastic IP for consistent public IP.
+•	Use PM2 or systemd to auto-restart the app.
+•	Add HTTPS with Let's Encrypt or Nginx as a reverse proxy.
+________________________________________
+🎓 Interview Insight
+•	Shows you understand cloud deployment, networking basics, and infrastructure setup—skills crucial for DevOps roles.
+
+Credits: Abhishek veeramalla https://youtu.be/NLmF64KdLN0?si=yut4tJ7IddPkvkrC 
+🚀 Day 13 – My DevOps Journey
+🔹 Topic: Top 15 AWS Services Every DevOps Engineer Should Know
+________________________________________
+🌐 What I Learned Today
+Today, I explored 15 core AWS services that are must-know tools for every DevOps Engineer. These services are used across deployment, monitoring, automation, and security.
+________________________________________
+✅ Top 15 AWS Services & Why They Matter
+No.	AWS Service	Purpose in DevOps
+1	EC2	Virtual servers to deploy apps
+2	VPC	Set up secure networking with subnets
+3	EBS/EFS	Persistent storage volumes for EC2
+4	S3	Object storage, used for backups, artifacts
+5	IAM	Manage access/permissions for users and services
+6	CloudWatch	Monitoring logs, setting up alarms
+7	Lambda	Serverless functions for automation
+8	CodePipeline	CI/CD orchestration tool
+9	CodeBuild	Builds, tests source code
+10	CodeDeploy	Handles automated deployments
+11	Billing/Cost Explorer	Track usage, optimize costs
+12	AWS Config	Ensure compliance, monitor resources
+13	KMS	Encrypt data using managed keys
+14	CloudTrail	Logs every AWS API call (security/audit)
+15	ECS/EKS/Fargate	Manage and deploy containers (Docker, Kubernetes)
+________________________________________
+🔍 Key Concepts I Understood
+•	CI/CD on AWS is built using CodePipeline, CodeBuild, and CodeDeploy.
+•	Security is handled using IAM (who can do what), CloudTrail (what happened), and KMS (how it’s encrypted).
+•	Automation is powered by Lambda, CloudWatch events, and configuration compliance tools like AWS Config.
+•	Containers can be deployed via ECS (managed), EKS (Kubernetes), or Fargate (serverless).
+________________________________________
+💡 What I’ll Practice Next
+•	Create a sample CI/CD pipeline using CodePipeline + CodeDeploy + S3.
+•	Deploy a Node.js Docker app on ECS or Fargate.
+•	Write IAM policies and simulate user access control.
+•	Enable CloudWatch alerts for resource usage.
+________________________________________
+🎯 My Takeaway Today
+"DevOps isn’t just about writing scripts—it’s about orchestrating tools, automating deployments, and ensuring secure, scalable, and cost-efficient infrastructure."
+
+
+🌱 Day 14– My DevOps Journey
+🧠 What I Learned Today
+Today, I started learning Terraform, one of the most powerful Infrastructure as Code (IaC) tools. I understood how Terraform helps automate infrastructure deployment and how its declarative syntax makes infra setup repeatable, version-controlled, and scalable.
+🧰 Tools & Concepts
+✅ What is Terraform?
+•	Terraform is an open-source IaC tool from HashiCorp.
+•	Used to provision and manage infrastructure using configuration files.
+•	Uses HCL (HashiCorp Configuration Language).
+✅ Why Terraform?
+•	Automates infrastructure setup.
+•	Multi-cloud support (AWS, Azure, GCP).
+•	Version-controlled infrastructure (like Git for infra).
+•	Declarative — define what you want, not how to do it.
+📦 My First Terraform Project Steps
+1. Install Terraform
+•	Downloaded and installed Terraform CLI from the official site.
+2. Write Terraform Configuration
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "my_ec2" {
+  ami           = "ami-0e670eb768a5fc3d4"
+  instance_type = "t2.micro"
+  tags = {
+    Name = "MyFirstEC2"
+  }
+}
+3. Terraform Commands I Used
+Command	Purpose
+terraform init	Initializes working directory
+terraform plan	Shows what Terraform will do
+terraform apply	Applies the configuration and creates resources
+terraform destroy	Destroys all resources created
+Teraform State File
+•	.tfstate file keeps track of the infrastructure’s current state.
+•	Needed to compare with the configuration and apply only required changes.
+•	Should be stored securely, especially when working in teams (prefer remote backend like S3 + DynamoDB for collaboration).
+🧪 What I’ll Practice Next
+•	Write my own .tf file to deploy EC2, S3, and security groups.
+•	Try terraform destroy and understand resource lifecycle.
+•	Learn about variables, outputs, and modules.
+
+💬 My Takeaway
+“Terraform feels like writing the blueprint for infrastructure — it’s clear, consistent, and incredibly powerful!”
+
+
+
+
+🌱 Day 15 – My DevOps Journey
+📌 Topic: Terraform – Providers, Multi-Region/Multi-Cloud, Variables & Conditions
+________________________________________
+🧠 What I Learned Today
+Today I explored how Terraform supports multiple providers, works across different regions and clouds, and how to use variables and conditions to make infrastructure dynamic and scalable.
+________________________________________
+📦 Key Concepts I Learned
+✅ Terraform Providers
+•	Providers are what connect Terraform to cloud platforms like AWS, Azure, or GCP.
+•	You can define multiple providers for different regions or even clouds using alias.
+provider "aws" {
+  region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "west"
+  region = "us-west-2"
+}
+________________________________________
+✅ Multi-Region & Multi-Cloud Setup
+•	Using provider = aws.west in resources to target different regions.
+•	This is great for high availability, disaster recovery, and redundancy.
+resource "aws_instance" "web_east" {
+  provider = aws
+  # ...
+}
+
+resource "aws_instance" "web_west" {
+  provider = aws.west
+  # ...
+}
+________________________________________
+✅ Variables for Reusability
+•	Variables make code dynamic and DRY (Don't Repeat Yourself).
+•	I learned how to define and use variables:
+
+variable "region" {
+  default = "us-east-1"
+}
+
+provider "aws" {
+  region = var.region
+}
+•	Run with:
+
+terraform apply -var="region=us-west-2"
+________________________________________
+✅ Conditional Logic in Resources
+•	Used count with conditions to create resources only when needed.
+count = var.create_instance ? 1 : 0
+•	This makes my Terraform code smart and responsive to input flags.
+________________________________________
+✨ My Takeaway Today
+“Writing one set of reusable Terraform code that works across multiple regions or clouds makes me feel like an Infra Ninja!”
