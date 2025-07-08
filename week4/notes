@@ -1,0 +1,232 @@
+🌱 Day 15 – My DevOps Journey
+📌 Topic: Terraform Modules – Reusable Infrastructure
+🧠 What I Learned Today
+Today I understood how to write modular Terraform code, making infrastructure reusable, cleaner, and more organized. Modules help avoid repetition and are perfect when working with large or multi-environment setups.
+🔍 Key Concepts
+✅ Terraform Modules
+•	A module is simply a folder with .tf files.
+•	Helps reuse code like EC2/VPC setups multiple times.
+•	Keeps root configuration clean and manageable.
+📁 My Module Structure
+modules/
+└── ec2/
+    ├── main.tf
+    ├── variables.tf
+    └── outputs.tf
+🔗 Using a Module in Main Configuration
+module "my_ec2_instance" {
+  source        = "./modules/ec2"
+  instance_type = "t2.micro"
+  ami           = "ami-xxxxxxxxxxxxxx"
+}
+🧰 Input & Output
+Inputs (variables.tf)
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+Outputs (outputs.tf)
+output "instance_id" {
+  value = aws_instance.my_ec2.id
+}
+🧪 What I’ll Practice Next
+•	Break my old EC2 + S3 setups into modules.
+•	Call the same module with different inputs.
+•	Create separate modules for VPC, security group, and RDS.
+✨ My Takeaway
+“Modules are like Terraform’s building blocks — reusable, neat, and ready for scaling!”
+
+🌱 Day 16 – My DevOps Journey
+📌 Topic: Dynamic Terraform with Data Sources
+🧠 What I Learned Today
+I explored how to make Terraform more flexible and responsive by using data sources and locals. I learned how to pull real-time values like AMI IDs, distribute EC2 instances across availability zones, and build security rules dynamically.
+🔍 Key Concepts
+✅ Data Sources
+•	Used data blocks like aws_ami and aws_availability_zones
+•	Automatically fetched the most recent AMI ID for Amazon Linux
+✅ Locals & Conditions
+•	Defined a default region using locals
+•	Used logical operations for cleaner configs
+✅ Multiple EC2 Instances
+•	Used count and element() to deploy EC2s across AZs
+✅ Dynamic Security Group
+•	Created a list of ingress rules and used a dynamic block
+📁 Sample Code
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+}
+
+locals {
+  ingress_rules = [
+    { port = 22, description = "SSH" },
+    { port = 80, description = "HTTP" },
+    { port = 443, description = "HTTPS" },
+    { port = 8080, description = "Custom" }
+  ]
+}
+
+resource "aws_security_group" "dynamic_sg" {
+  name        = "dynamic-sg"
+  vpc_id      = var.vpc_id
+
+  dynamic "ingress" {
+    for_each = local.ingress_rules
+    content {
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+🧪 What I’ll Practice Next
+•	Fetch dynamic subnet IDs and use them
+•	Write a custom locals.tf file for cleaner configs
+•	Add egress rules using dynamic blocks
+✨ My Takeaway
+“Terraform becomes smarter when it adapts to your cloud environment automatically.”
+
+
+🌱 Day 17 – My DevOps Journey
+📌 Topic: User Data & Lifecycle Meta-Arguments
+🧠 What I Learned Today
+I learned how to automatically configure EC2 instances on launch using user data scripts. I also learned how to manage resource updates safely with lifecycle meta-arguments.
+🔍 Key Concepts
+✅ User Data
+•	Shell script installs Git, Maven, Apache
+•	Passed to EC2 instance using user_data = file(...)
+✅ Lifecycle Management
+•	Used create_before_destroy to avoid downtime
+📁 install_httpd.sh Script
+#!/bin/bash
+sudo yum update -y
+sudo yum install git -y
+sudo yum install maven -y
+sudo yum install -y httpd
+sudo systemctl start httpd
+sudo systemctl enable httpd
+echo "<h1>Server launched via Terraform</h1>" > /var/www/html/index.html
+📁 EC2 with Lifecycle
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+  key_name      = var.key_name
+  user_data     = file("install_httpd.sh")
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+🧪 What I’ll Practice Next
+•	Use user_data to configure MySQL or Tomcat
+•	Combine with remote-exec for more control
+✨ My Takeaway
+“User data turns EC2s into ready-to-use servers right at boot time.”
+
+
+
+🌱 Day 18 – My DevOps Journey
+📌 Topic: Terraform Remote State + Locking
+🧠 What I Learned Today
+Today I moved from local to remote backend using S3, and added state locking using DynamoDB — a key step toward real-world teamwork and collaboration.
+🔍 Key Concepts
+✅ Remote State
+•	Stores .tfstate in S3 instead of local machine
+•	Helps share infra state with teams
+✅ DynamoDB Locking
+•	Prevents concurrent applies from corrupting state
+•	Uses a LockID primary key
+📁 Backend Configuration
+terraform {
+  backend "s3" {
+    bucket         = "awsdevops8amterraformstate"
+    key            = "terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+    dynamodb_table = "awsdevops8amdynamodb"
+  }
+}
+🧪 What I’ll Practice Next
+•	Use different backends for dev/staging/prod
+•	Add versioning and lifecycle policy to the S3 bucket
+✨ My Takeaway
+“Remote state + locking = safe, scalable Terraform in team environments.”
+
+🌱 Day 19 – My DevOps Journey
+📌 Topic: Reusable Infrastructure with Modules
+🧠 What I Learned Today
+Today I understood how to write modular Terraform code, making infrastructure reusable, cleaner, and more organized. Modules help avoid repetition and are perfect when working with large or multi-environment setups.
+🔍 Key Concepts
+✅ Terraform Modules
+•	A module is simply a folder with .tf files
+•	Helps reuse code like EC2/VPC setups multiple times
+•	Keeps root configuration clean and manageable
+📁 My Module Structure
+modules/
+└── ec2/
+    ├── main.tf
+    ├── variables.tf
+    └── outputs.tf
+📁 Calling the Module
+module "my_ec2_instance" {
+  source        = "./modules/ec2"
+  instance_type = "t2.micro"
+  ami           = "ami-xxxxxxxxxxxxxx"
+}
+📁 Inputs
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+📁 Outputs
+output "instance_id" {
+  value = aws_instance.my_ec2.id
+}
+🧪 What I’ll Practice Next
+•	Break my old EC2 + S3 setups into modules
+•	Call the same module with different inputs
+•	Create separate modules for VPC, security group, and RDS
+✨ My Takeaway
+“Modules are like Terraform’s building blocks — reusable, neat, and ready for scaling!”
+
+🌱 Day 20 – My DevOps Journey
+📌 Topic: Git Refresher + Ansible Setup
+🧠 What I Learned Today
+I started the day by revisiting important Git concepts and finished by setting up Ansible for the first time — getting ready to manage servers at scale.
+🔍 Key Concepts
+✅ Git Basics
+•	git init, git clone, git add, git commit, git push
+•	Branching: git checkout -b, git branch -d
+•	Merge vs Rebase: tested both
+•	Cherry-pick: grabbed specific commits
+✅ Ansible Setup
+•	Generated SSH key with ssh-keygen
+•	Copied key to remote machines
+•	Installed Ansible and verified Python3
+•	Created /etc/ansible/hosts inventory file
+📁 Inventory File Example
+[webservers]
+54.226.3.181
+34.224.7.217
+🧪 Commands Practiced
+ansible -m ping all
+ansible -i inventory.ini -m ping webservers
+🧪 What I’ll Practice Next
+•	Create and run Ansible playbooks
+•	Manage multiple servers from one control node
+✨ My Takeaway
+“With Git and Ansible together, I’m ready to automate both code and infrastructure.”
+
+
